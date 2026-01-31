@@ -1,1 +1,1 @@
-# tele-bot# stock-stalker-bot
+# stock-stalker-bot
