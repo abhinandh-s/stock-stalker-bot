@@ -1,10 +1,10 @@
-name: Releaser
+name: Notifier
 
 on:
   workflow_dispatch:
   push:
   schedule:
-    - cron: "0 0 * * *"   # daily midnight UTC
+    - cron: "10 10 * * *" # at 3:40pm in India
 
 permissions:
   contents: write
