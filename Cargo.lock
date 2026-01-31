@@ -1228,8 +1228,6 @@ dependencies = [
  "anyhow",
  "nse-quote",
  "reqwest",
- "serde",
- "serde_json",
  "tokio",
 ]
 

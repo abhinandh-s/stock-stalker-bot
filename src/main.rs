@@ -1,15 +1,14 @@
-use reqwest::Client;
-    
 const SYMBOLS: [&str; 2] = ["GROWW", "ITC"];
-
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let telegram_token = std::env::var("TELEGRAM_BOT_TOKEN")?;
     let telegram_chat_id = std::env::var("TELEGRAM_CHAT_ID")?;
-    let res = fetch_todays_result(SYMBOLS.first().unwrap()).await.unwrap();
 
-    let _ = send_to_telegram(&telegram_token, &telegram_chat_id, &res).await;
+    for symbol in SYMBOLS {
+        let res = fetch_todays_result(symbol).await.unwrap();
+        let _ = send_to_telegram(&telegram_token, &telegram_chat_id, &res).await;
+    }
 
     Ok(())
 }
@@ -36,7 +35,7 @@ async fn send_to_telegram(
         response.price_info.change
     );
 
-    let client = Client::new();
+    let client = reqwest::Client::new();
     client
         .post(&url)
         .form(&[
