@@ -1,0 +1,12 @@
+[package]
+name = "stock-stalker-bot"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+nse-quote = { git = "https://github.com/abhinandh-s/nse-quote", version = "0.1.0" }
+anyhow = "1.0"
+reqwest = { version = "0.13.1", features = ["json", "multipart", "rustls", "form"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1", features = ["full"] }
