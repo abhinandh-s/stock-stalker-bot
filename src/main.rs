@@ -77,7 +77,7 @@ async fn send_to_telegram(
         .unwrap_or(0.0);
 
     let msg = format!(
-        "# {}\n\n
+        "# {}\n\n{}\n{}\n{}\n{}",
          symbol,
         open,
         prev_close,
