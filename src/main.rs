@@ -1,23 +1,41 @@
-const SYMBOLS: [&str; 2] = ["GROWW", "ITC"];
+const SYMBOLS: [&str; 2] = ["GROWW", "ITC"]; 
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let telegram_token = std::env::var("TELEGRAM_BOT_TOKEN")?;
     let telegram_chat_id = std::env::var("TELEGRAM_CHAT_ID")?;
 
+    // Initialize and prime the client exactly ONCE before the loop
+    let client = nse_quote::NseClient::connect().await?;
+
     for symbol in SYMBOLS {
-        let res = fetch_todays_result(symbol).await.unwrap();
-        let _ = send_to_telegram(&telegram_token, &telegram_chat_id, &res).await;
+        // Pass the shared client by reference
+        match fetch_todays_result(&client, symbol).await {
+            Ok(res) => {
+                // Handle Telegram send errors gracefully instead of ignoring them
+                if let Err(e) = send_to_telegram(&telegram_token, &telegram_chat_id, &res).await {
+                    eprintln!("Failed to send {} to Telegram: {}", symbol, e);
+                }
+            }
+            Err(e) => {
+                // If fetching fails, we log it and move to the next symbol instead of crashing
+                eprintln!("Failed to fetch {}: {}", symbol, e);
+            }
+        }
     }
 
     Ok(())
 }
 
-async fn fetch_todays_result(symbol: &str) -> anyhow::Result<nse_quote::Response> {
-    let client = nse_quote::NseClient::new()?;
+// Accept a reference to the initialized client
+async fn fetch_todays_result(
+    client: &nse_quote::NseClient, 
+    symbol: &str
+) -> anyhow::Result<nse_quote::Response> {
     let result = client.quote_equity(symbol).await?;
     Ok(result)
 }
+
 
 async fn send_to_telegram(
     token: &str,
