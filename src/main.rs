@@ -44,13 +44,45 @@ async fn send_to_telegram(
 ) -> anyhow::Result<()> {
     let url = format!("https://api.telegram.org/bot{}/sendMessage", token);
 
+    // 1. Safely extract the symbol, falling back to "N/A" if it's missing
+    let symbol = response
+        .info
+        .as_ref()
+        .and_then(|i| i.symbol.as_deref())
+        .unwrap_or("N/A");
+
+    // 2. Safely extract the price data, falling back to 0.0 if missing
+    let open = response
+        .price_info
+        .as_ref()
+        .and_then(|p| p.open)
+        .unwrap_or(0.0);
+
+    let prev_close = response
+        .price_info
+        .as_ref()
+        .and_then(|p| p.previous_close)
+        .unwrap_or(0.0);
+
+    let close = response
+        .price_info
+        .as_ref()
+        .and_then(|p| p.close)
+        .unwrap_or(0.0);
+
+    let change = response
+        .price_info
+        .as_ref()
+        .and_then(|p| p.change)
+        .unwrap_or(0.0);
+
     let msg = format!(
-        "# {}\n\n```sh\nopen: {}\nprevious_close: {}\nclose: {}\nchange: {}\n```\n",
-        response.info.symbol,
-        response.price_info.open,
-        response.price_info.previous_close,
-        response.price_info.close,
-        response.price_info.change
+        "# {}\n\n
+         symbol,
+        open,
+        prev_close,
+        close,
+        change
     );
 
     let client = reqwest::Client::new();
