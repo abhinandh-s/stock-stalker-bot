@@ -2,7 +2,7 @@ use yahoo_finance_api as yahoo;
 use time::OffsetDateTime;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
 let telegram_token = std::env::var("TELEGRAM_BOT_TOKEN")?;
     let telegram_chat_id = std::env::var("TELEGRAM_CHAT_ID")?;
     let provider = yahoo::YahooConnector::new().unwrap();
@@ -22,6 +22,7 @@ let msg = format!("Groww: {}", quote.close);
 if let Err(e) = send_to_telegram(&telegram_token, &telegram_chat_id, msg).await {
                     eprintln!("Failed to send {} to Telegram: {}", symbol, e);
                 }
+Ok(())
 }
 
 async fn send_to_telegram(
