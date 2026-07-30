@@ -20,7 +20,7 @@ let telegram_token = std::env::var("TELEGRAM_BOT_TOKEN")?;
         
 let msg = format!("Groww: {}", quote.close);
 if let Err(e) = send_to_telegram(&telegram_token, &telegram_chat_id, &msg).await {
-                    eprintln!("Failed to send {} to Telegram: {}", symbol, e);
+                    eprintln!("Failed to send to Telegram: {}", e);
                 }
 Ok(())
 }
