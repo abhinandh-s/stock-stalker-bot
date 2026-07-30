@@ -18,8 +18,8 @@ let telegram_token = std::env::var("TELEGRAM_BOT_TOKEN")?;
     let time: OffsetDateTime =
         OffsetDateTime::from_unix_timestamp(quote.timestamp.try_into().unwrap()).unwrap();
         
-
-if let Err(e) = send_to_telegram(&telegram_token, &telegram_chat_id, &quote.close).await {
+let msg = format!("Groww: {}", quote.close);
+if let Err(e) = send_to_telegram(&telegram_token, &telegram_chat_id, msg).await {
                     eprintln!("Failed to send {} to Telegram: {}", symbol, e);
                 }
 }
