@@ -3,6 +3,8 @@ use time::OffsetDateTime;
 
 #[tokio::main]
 async fn main() {
+let telegram_token = std::env::var("TELEGRAM_BOT_TOKEN")?;
+    let telegram_chat_id = std::env::var("TELEGRAM_CHAT_ID")?;
     let provider = yahoo::YahooConnector::new().unwrap();
     
     // get the latest quotes in 1 minute intervals
@@ -16,5 +18,30 @@ async fn main() {
     let time: OffsetDateTime =
         OffsetDateTime::from_unix_timestamp(quote.timestamp.try_into().unwrap()).unwrap();
         
-    println!("At {} quote price of Apple was {}", time, quote.close);
+
+if let Err(e) = send_to_telegram(&telegram_token, &telegram_chat_id, &quote.close).await {
+                    eprintln!("Failed to send {} to Telegram: {}", symbol, e);
+                }
+}
+
+async fn send_to_telegram(
+    token: &str,
+    chat_id: &str,
+    msg: &str,
+) -> anyhow::Result<()> {
+    let url = format!("https://api.telegram.org/bot{}/sendMessage", token);
+
+    
+    let client = reqwest::Client::new();
+    client
+        .post(&url)
+        .form(&[
+            ("chat_id", chat_id),
+            ("text", msg),
+            ("parse_mode", "Markdown"),
+        ])
+        .send()
+        .await?;
+
+    Ok(())
 }
